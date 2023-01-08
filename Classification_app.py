@@ -8,6 +8,8 @@ Created on Sun Jan  8 13:59:53 2023
 import streamlit as st
 import pandas as pd
 from st_pages import Page, show_pages, add_page_title
+from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 st.write("# Daily Stress Prediction")
 st.write('---')
@@ -101,7 +103,9 @@ if df['GENDER'][0] == 'Female':
     df['GENDER'][0] = 0
 if df['GENDER'][0] == 'Male':
     df['GENDER'][0] = 1
-    
+
+df2 = df.copy()  
+
 from sklearn.preprocessing import LabelEncoder
 
 # encoder for stressData
@@ -112,9 +116,13 @@ X['AGE'].unique()
 le_gender = LabelEncoder()
 X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
-
+scaler = StandardScaler()
+scaler.fit(X)
+X = scaler.transform(X)
+df = scaler.transform(df)
 #%% model
 from sklearn.ensemble import AdaBoostClassifier
+ADA_result = 0
 if ok:  
     ADA = AdaBoostClassifier()
     ADA = ADA.fit(X, y)
@@ -127,9 +135,53 @@ if ok:
 
 
 
+X = stressData.drop("WORK_LIFE_BALANCE_SCORE", axis=1)
+y = stressData["WORK_LIFE_BALANCE_SCORE"]
+    
+from sklearn.preprocessing import LabelEncoder
 
+# encoder for stressData
+le_age = LabelEncoder()
+X['AGE'] = le_age.fit_transform(X['AGE'])
+X['AGE'].unique()
 
+le_gender = LabelEncoder()
+X['GENDER'] = le_gender.fit_transform(X['GENDER'])
+X['GENDER'].unique()
 
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = scaler.transform(X)
+df2.insert(1,'DAILY_STRESS',[ADA_result])
+df2 = scaler.transform(df2)
+df2 = pd.DataFrame(df2)
+#%% model
+def linear_regression(x,y):
+  x=np.concatenate([np.ones((x.shape[0],1)),x],axis=1)
+  beta=np.matmul(np.matmul(np.linalg.inv(np.matmul(x.T,x)),x.T),y)
+  return beta
+
+weights=linear_regression(np.array(X),np.array(y))
+df2.insert(0, column="intercept", value=1)
+
+prediction = sum(df2.iloc[0]*weights.T)
+
+mean_y = np.mean(y)
+std_y = np.std(y)
+result = 'EXCELLENT'
+if prediction < mean_y + 2*std_y:
+    result = 'VERY GOOD'
+if prediction < mean_y + std_y :
+    result = 'GOOD'
+if prediction < mean_y:
+    result = 'BAD'
+if prediction < mean_y - std_y :
+    result = 'VERY BAD'
+if prediction < mean_y - 2*std_y:
+    result = 'TERRIBLE'
+if ok:
+    st.subheader(f"You have a {result} balance between your work and personal life.")
 
 
 

@@ -1,43 +1,51 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan  8 11:34:08 2023
+Created on Sun Jan  8 13:59:53 2023
 
 @author: jacky
 """
-import sklearn
+
 import streamlit as st
 import pandas as pd
-from sklearn.linear_model import LinearRegression
 from st_pages import Page, show_pages, add_page_title
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 
-st.write("# Work Life Balance calculator")
-show_pages(
-    [
-        Page("Regression_app.py", "Work Life Balance"),
-        Page("Classification_app.py", "Daily Stress"),
-    ]
-)
-
+st.write("# Daily Stress Prediction")
 st.write('---')
 st.write("""#### Answer the following questions:""")
+
 # load data
 stressData=pd.read_csv("stressData.csv")
 stressData = stressData.drop([10005])
+stressData.reset_index(inplace=True)
+stressData.set_index('index')
+stressData.drop(['index'], axis=1, inplace=True)
 stressData.drop(['Timestamp'], axis=1, inplace=True)
 stressData['DAILY_STRESS'] = stressData['DAILY_STRESS'].astype(int)
 
-# main panel
+for i in range(len(stressData)):
+    if stressData['DAILY_STRESS'][i] <= 2:
+        stressData['DAILY_STRESS'][i] = 0
+    if stressData['DAILY_STRESS'][i] >= 3:
+        stressData['DAILY_STRESS'][i] = 1
+
+filt1 = (stressData['DAILY_STRESS'] == 1)
+output_1 = stressData.loc[filt1]               # data that output = 1
+filt0 = (stressData['DAILY_STRESS'] == 0)
+output_0 = stressData.loc[filt0]               # data that output = 0
+output_1 = output_1.sample(n = len(output_0))     # set the ratio of output_1 and output_0
+stressData = pd.concat([output_1, output_0]) 
+
 def user_input():
     FRUITS_VEGGIES = st.slider('HOW MANY FRUITS OR VEGETABLES DO YOU EAT EVERYDAY?', 0, 5)
-    DAILY_STRESS = st.slider('HOW MUCH STRESS DO YOU TYPICALLY EXPERIENCE EVERYDAY?',0, 5)
     PLACES_VISITED = st.slider('HOW MANY NEW PLACES DO YOU VISIT?', 0, 10)
     CORE_CIRCLE = st.slider('HOW MANY PEOPLE ARE VERY CLOSE TO YOU?', 0, 10)
     SUPPORTING_OTHERS = st.slider('HOW MANY PEOPLE DO YOU HELP ACHIEVE A BETTER LIFE?', 0, 10)
     SOCIAL_NETWORK = st.slider('WITH HOW MANY PEOPLE DO YOU INTERACT WITH DURING A TYPICAL DAY?', 0, 10)
     ACHIEVEMENT = st.slider('HOW MANY REMARKABLE ACHIEVEMENTS ARE YOU PROUD OF?', 0, 10)
     DONATION = st.slider('HOW MANY TIMES DO YOU DONATE YOUR TIME OR MONEY TO GOOD CAUSES?', 0, 5)
-    BMI_RANGE = st.selectbox('WHAT IS YOUR BODY MASS INDEX (BMI) RANGE?(<25 choose 0, >=25 choose 1)', (0, 1))
+    BMI_RANGE = st.selectbox('WHAT IS YOUR BODY MASS INDEX (BMI) RANGE?', (0, 1))
     TODO_COMPLETED = st.slider('HOW WELL DO YOU COMPLETE YOUR WEEKLY TO-DO LISTS?', 0, 10)
     FLOW = st.slider('IN A TYPICAL DAY, HOW MANY HOURS DO YOU EXPERIENCE "FLOW"?', 0, 10)
     DAILY_STEPS = st.slider('HOW MANY STEPS (IN THOUSANDS) DO YOU TYPICALLY WALK EVERYDAY?', 1, 10)
@@ -53,7 +61,6 @@ def user_input():
     GENDER = st.selectbox('GENDER', ("Female", "Male"))
     ok = st.button("Done")
     input_data = {"FRUITS_VEGGIES":FRUITS_VEGGIES,
-                    "DAILY_STRESS":DAILY_STRESS,
                     "PLACES_VISITED":PLACES_VISITED,
                     "CORE_CIRCLE":CORE_CIRCLE,
                     "SUPPORTING_OTHERS":SUPPORTING_OTHERS,
@@ -77,10 +84,11 @@ def user_input():
     features = pd.DataFrame(input_data, index=[0])
     return features, ok
 #%% data pre-processing
-
-X = stressData.drop("WORK_LIFE_BALANCE_SCORE", axis=1)
-y = stressData["WORK_LIFE_BALANCE_SCORE"]
+X = stressData.drop(["DAILY_STRESS"], axis=1)
+X = X.drop(["WORK_LIFE_BALANCE_SCORE"], axis = 1)
+y = stressData["DAILY_STRESS"]
 df, ok = user_input()
+
 #encoder for input
 if df['AGE'][0] == 'less than 20':
     df['AGE'][0] = 3
@@ -95,6 +103,40 @@ if df['GENDER'][0] == 'Female':
     df['GENDER'][0] = 0
 if df['GENDER'][0] == 'Male':
     df['GENDER'][0] = 1
+
+df2 = df.copy()  
+
+from sklearn.preprocessing import LabelEncoder
+
+# encoder for stressData
+le_age = LabelEncoder()
+X['AGE'] = le_age.fit_transform(X['AGE'])
+X['AGE'].unique()
+
+le_gender = LabelEncoder()
+X['GENDER'] = le_gender.fit_transform(X['GENDER'])
+X['GENDER'].unique()
+scaler = StandardScaler()
+scaler.fit(X)
+X = scaler.transform(X)
+df = scaler.transform(df)
+#%% model
+from sklearn.ensemble import AdaBoostClassifier
+ADA_result = 0
+if ok:  
+    ADA = AdaBoostClassifier()
+    ADA = ADA.fit(X, y)
+    ADA_result = ADA.predict(df)
+    if ADA_result == 1:
+        result = 'high'
+    else:
+        result = 'low'
+    st.subheader(f"You stress level is {result}.")
+
+
+
+X = stressData.drop("WORK_LIFE_BALANCE_SCORE", axis=1)
+y = stressData["WORK_LIFE_BALANCE_SCORE"]
     
 from sklearn.preprocessing import LabelEncoder
 
@@ -107,6 +149,13 @@ le_gender = LabelEncoder()
 X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
 
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = scaler.transform(X)
+df2.insert(1,'DAILY_STRESS',[ADA_result])
+df2 = scaler.transform(df2)
+df2 = pd.DataFrame(df2)
 #%% model
 def linear_regression(x,y):
   x=np.concatenate([np.ones((x.shape[0],1)),x],axis=1)
@@ -114,10 +163,9 @@ def linear_regression(x,y):
   return beta
 
 weights=linear_regression(np.array(X),np.array(y))
-df.insert(0, column="intercept", value=1)
+df2.insert(0, column="intercept", value=1)
 
-prediction = sum(df.iloc[0]*weights.T)
-
+prediction = sum(df2.iloc[0]*weights.T)
 
 mean_y = np.mean(y)
 std_y = np.std(y)
@@ -134,3 +182,25 @@ if prediction < mean_y - 2*std_y:
     result = 'TERRIBLE'
 if ok:
     st.subheader(f"You have a {result} balance between your work and personal life.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
