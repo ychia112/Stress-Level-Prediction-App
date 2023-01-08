@@ -139,7 +139,7 @@ requests==2.28.1
 rich==12.6.0
 rope==1.6.0
 Rtree==1.0.1
-scikit-learn @ file:///C:/b/abs_eezai1guz5/croot/scikit-learn_1667587552067/work
+sklearn @ file:///C:/b/abs_eezai1guz5/croot/scikit-learn_1667587552067/work
 scipy==1.9.3
 seaborn==0.12.1
 semver==2.13.0
