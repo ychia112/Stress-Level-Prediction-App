@@ -36,7 +36,7 @@ def user_input():
     SOCIAL_NETWORK = st.slider('WITH HOW MANY PEOPLE DO YOU INTERACT WITH DURING A TYPICAL DAY?', 0, 10)
     ACHIEVEMENT = st.slider('HOW MANY REMARKABLE ACHIEVEMENTS ARE YOU PROUD OF?', 0, 10)
     DONATION = st.slider('HOW MANY TIMES DO YOU DONATE YOUR TIME OR MONEY TO GOOD CAUSES?', 0, 5)
-    BMI_RANGE = st.selectbox('WHAT IS YOUR BODY MASS INDEX (BMI) RANGE?', (0, 1))
+    BMI_RANGE = st.selectbox('WHAT IS YOUR BODY MASS INDEX (BMI) RANGE?(<25 choose 0, >=25 choose 1)', (0, 1))
     TODO_COMPLETED = st.slider('HOW WELL DO YOU COMPLETE YOUR WEEKLY TO-DO LISTS?', 0, 10)
     FLOW = st.slider('IN A TYPICAL DAY, HOW MANY HOURS DO YOU EXPERIENCE "FLOW"?', 0, 10)
     DAILY_STEPS = st.slider('HOW MANY STEPS (IN THOUSANDS) DO YOU TYPICALLY WALK EVERYDAY?', 1, 10)
@@ -107,22 +107,22 @@ X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
 
 #%% model
-def linear_regression(x,y):
-  x=np.concatenate([np.ones((x.shape[0],1)),x],axis=1)
-  beta=np.matmul(np.matmul(np.linalg.inv(np.matmul(x.T,x)),x.T),y)
-  return beta
+model = LinearRegression()
+model.fit(X,y)
+prediction = model.predict(df)
 
-weights = linear_regression(np.array(X), np.array(y))
-
-
-predict=[]
-testx=np.mat(df)
-testx= testx.astype(np.float64)
-prediction = testx * weights
-
-# model = LinearRegression()
-# model.fit(X,y)
-# prediction = model.predict(df)
-result = str(prediction)
+mean_y = np.mean(y)
+std_y = np.std(y)
+result = 'EXCELLENT'
+if prediction < mean_y + 2*std_y:
+    result = 'VERY GOOD'
+if prediction < mean_y + std_y :
+    result = 'GOOD'
+if prediction < mean_y:
+    result = 'BAD'
+if prediction < mean_y - std_y :
+    result = 'VERY BAD'
+if prediction < mean_y - 2*std_y:
+    result = 'TERRIBLE'
 if ok:
-    st.subheader(f"The estimated stress level is {result}")
+    st.subheader(f"You have a {result} balance between your work and personal life.")

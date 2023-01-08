@@ -8,7 +8,7 @@ import streamlit as st
 import pandas as pd
 from st_pages import Page, show_pages, add_page_title
 
-add_page_title()
+st.write("# Daily Stress Prediction")
 st.write('---')
 st.write("""#### Answer the following questions:""")
 
@@ -65,7 +65,8 @@ def user_input():
     features = pd.DataFrame(input_data, index=[0])
     return features, ok
 #%% data pre-processing
-X = stressData.drop("DAILY_STRESS", axis=1)
+X = stressData.drop(["DAILY_STRESS"], axis=1)
+X = X.drop(["WORK_LIFE_BALANCE_SCORE"], axis = 1)
 y = stressData["DAILY_STRESS"]
 df, ok = user_input()
 
@@ -96,7 +97,12 @@ X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
 
 #%% model
-
+from sklearn.ensemble import AdaBoostClassifier
+ADA = AdaBoostClassifier()
+ADA = ADA.fit(X, y)
+result = ADA.predict(df)
+if ok:
+    st.subheader(f"You stress level is {result}.")
 
 
 
