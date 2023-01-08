@@ -6,6 +6,7 @@ Created on Sun Jan  8 13:59:53 2023
 """
 import streamlit as st
 import pandas as pd
+import sklearn
 from st_pages import Page, show_pages, add_page_title
 
 st.write("# Daily Stress Prediction")

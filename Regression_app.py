@@ -7,6 +7,7 @@ Created on Sun Jan  8 11:34:08 2023
 
 import streamlit as st
 import pandas as pd
+import sklearn
 from sklearn.linear_model import LinearRegression
 from st_pages import Page, show_pages, add_page_title
 import numpy as np
