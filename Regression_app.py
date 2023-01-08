@@ -25,6 +25,7 @@ st.write("""#### Answer the following questions:""")
 stressData=pd.read_csv("stressData.csv")
 stressData = stressData.drop([10005])
 stressData.drop(['Timestamp'], axis=1, inplace=True)
+stressData['DAILY_STRESS'] = stressData['DAILY_STRESS'].astype(int)
 
 # main panel
 def user_input():
