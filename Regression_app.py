@@ -107,9 +107,16 @@ X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
 
 #%% model
-model = LinearRegression()
-model.fit(X,y)
-prediction = model.predict(df)
+def linear_regression(x,y):
+  x=np.concatenate([np.ones((x.shape[0],1)),x],axis=1)
+  beta=np.matmul(np.matmul(np.linalg.inv(np.matmul(x.T,x)),x.T),y)
+  return beta
+
+weights=linear_regression(np.array(X),np.array(y))
+df.insert(0, column="intercept", value=1)
+
+prediction = sum(df.iloc[0]*weights.T)
+
 
 mean_y = np.mean(y)
 std_y = np.std(y)
