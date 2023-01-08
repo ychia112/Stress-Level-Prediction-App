@@ -4,7 +4,7 @@ Created on Sun Jan  8 11:34:08 2023
 
 @author: jacky
 """
-
+import sklearn
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression

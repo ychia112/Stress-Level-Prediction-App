@@ -4,6 +4,7 @@ Created on Sun Jan  8 13:59:53 2023
 
 @author: jacky
 """
+import sklearn
 import streamlit as st
 import pandas as pd
 from st_pages import Page, show_pages, add_page_title
