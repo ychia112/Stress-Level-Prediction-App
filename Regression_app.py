@@ -23,11 +23,13 @@ stressData.drop(['index'], axis=1, inplace=True)
 stressData.drop(['Timestamp'], axis=1, inplace=True)
 stressData['DAILY_STRESS'] = stressData['DAILY_STRESS'].astype(int)
 
-for i in range(len(stressData)):
-    if stressData['DAILY_STRESS'][i] <= 2:
-        stressData['DAILY_STRESS'][i] = 0
-    if stressData['DAILY_STRESS'][i] >= 3:
-        stressData['DAILY_STRESS'][i] = 1
+stressData.loc[stressData['DAILY_STRESS'] == 0, 'DAILY_STRESS'] = 0
+stressData.loc[stressData['DAILY_STRESS'] == 1, 'DAILY_STRESS'] = 0
+stressData.loc[stressData['DAILY_STRESS'] == 2, 'DAILY_STRESS'] = 0
+stressData.loc[stressData['DAILY_STRESS'] == 3, 'DAILY_STRESS'] = 1
+stressData.loc[stressData['DAILY_STRESS'] == 4, 'DAILY_STRESS'] = 1
+stressData.loc[stressData['DAILY_STRESS'] == 5, 'DAILY_STRESS'] = 1
+
 
 filt1 = (stressData['DAILY_STRESS'] == 1)
 output_1 = stressData.loc[filt1]               # data that output = 1
