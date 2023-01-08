@@ -87,6 +87,7 @@ def user_input():
 X = stressData.drop(["DAILY_STRESS"], axis=1)
 X = X.drop(["WORK_LIFE_BALANCE_SCORE"], axis = 1)
 y = stressData["DAILY_STRESS"]
+
 df, ok = user_input()
 
 #encoder for input
