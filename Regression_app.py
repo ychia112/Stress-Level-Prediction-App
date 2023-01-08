@@ -46,7 +46,7 @@ def user_input():
     SOCIAL_NETWORK = st.slider('With how many people do you interact with during a typical day?', 0, 10)
     ACHIEVEMENT = st.slider('How many remarkable achievements are you proud of? (Over the last 12 months)', 0, 10)
     DONATION = st.slider('How many times do you donate your time or money to good causes? (Over a period of 12 months. Include financial donation, your time contribution, fundraising, volunteering,...)', 0, 5)
-    BMI_RANGE = st.selectbox('What is your body mass index (bmi) range?', (0, 1))
+    BMI_RANGE = st.selectbox('What is your body mass index (bmi) range? (<25:0 / >=25:1)', (0, 1))
     TODO_COMPLETED = st.slider('How well do you complete your weekly to-do lists?', 0, 10)
     FLOW = st.slider('In a typical day, how many hours do you experience "flow"? ( Hours per day. Flow is defined as the mental state, in which you are fully immersed in performing an activity.)', 0, 10)
     DAILY_STEPS = st.slider('How many steps (in thousands) do you typically walk everyday?', 1, 10)
