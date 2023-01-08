@@ -15,7 +15,7 @@ st.write("# Work Life Balance calculator")
 show_pages(
     [
         Page("Regression_app.py", "Work Life Balance"),
-        Page("pages/Classification_app.py", "Daily Stress"),
+        Page("Classification_app.py", "Daily Stress"),
     ]
 )
 
