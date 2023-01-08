@@ -7,11 +7,10 @@ Created on Sun Jan  8 13:59:53 2023
 
 import streamlit as st
 import pandas as pd
-from st_pages import Page, show_pages, add_page_title
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 
-st.write("# Daily Stress Prediction")
+st.write("# Daily Stress Prediction and Work Life Balance Grading")
 st.write('---')
 st.write("""#### Answer the following questions:""")
 
