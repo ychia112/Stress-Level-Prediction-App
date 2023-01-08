@@ -4,14 +4,8 @@ Created on Sun Jan  8 13:59:53 2023
 
 @author: jacky
 """
-import numpy as np
-from sklearn.metrics import mean_absolute_percentage_error
-from sklearn.metrics import mean_squared_error
-import seaborn as sns
 import streamlit as st
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from st_pages import Page, show_pages, add_page_title
 
 add_page_title()

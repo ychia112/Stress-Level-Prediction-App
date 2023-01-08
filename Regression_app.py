@@ -4,15 +4,12 @@ Created on Sun Jan  8 11:34:08 2023
 
 @author: jacky
 """
-import numpy as np
-from sklearn.metrics import mean_absolute_percentage_error
-from sklearn.metrics import mean_squared_error
-import seaborn as sns
+
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from st_pages import Page, show_pages, add_page_title
+import numpy as np
 
 st.write("# Work Life Balance calculator")
 show_pages(
@@ -110,9 +107,22 @@ X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
 
 #%% model
-model = LinearRegression()
-model.fit(X,y)
-prediction = model.predict(df)
-result = prediction
+def linear_regression(x,y):
+  x=np.concatenate([np.ones((x.shape[0],1)),x],axis=1)
+  beta=np.matmul(np.matmul(np.linalg.inv(np.matmul(x.T,x)),x.T),y)
+  return beta
+
+weights = linear_regression(np.array(X), np.array(y))
+
+
+predict=[]
+testx=np.mat(df)
+testx= testx.astype(np.float64)
+prediction = testx * weights
+
+# model = LinearRegression()
+# model.fit(X,y)
+# prediction = model.predict(df)
+result = str(prediction)
 if ok:
-    st.subheader(f"The estimated stress level is {str(prediction)}")
+    st.subheader(f"The estimated stress level is {result}")
