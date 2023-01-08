@@ -14,7 +14,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from st_pages import Page, show_pages, add_page_title
 
-add_page_title()
+st.write("# Work Life Balance calculator")
 show_pages(
     [
         Page("Regression_app.py", "Work Life Balance"),
