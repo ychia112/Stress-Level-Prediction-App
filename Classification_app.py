@@ -4,7 +4,7 @@ Created on Sun Jan  8 13:59:53 2023
 
 @author: jacky
 """
-import sklearn
+
 import streamlit as st
 import pandas as pd
 from st_pages import Page, show_pages, add_page_title
@@ -16,8 +16,24 @@ st.write("""#### Answer the following questions:""")
 # load data
 stressData=pd.read_csv("stressData.csv")
 stressData = stressData.drop([10005])
+stressData.reset_index(inplace=True)
+stressData.set_index('index')
+stressData.drop(['index'], axis=1, inplace=True)
 stressData.drop(['Timestamp'], axis=1, inplace=True)
+stressData['DAILY_STRESS'] = stressData['DAILY_STRESS'].astype(int)
 
+for i in range(len(stressData)):
+    if stressData['DAILY_STRESS'][i] <= 2:
+        stressData['DAILY_STRESS'][i] = 0
+    if stressData['DAILY_STRESS'][i] >= 3:
+        stressData['DAILY_STRESS'][i] = 1
+
+filt1 = (stressData['DAILY_STRESS'] == 1)
+output_1 = stressData.loc[filt1]               # data that output = 1
+filt0 = (stressData['DAILY_STRESS'] == 0)
+output_0 = stressData.loc[filt0]               # data that output = 0
+output_1 = output_1.sample(n = len(output_0))     # set the ratio of output_1 and output_0
+stressData = pd.concat([output_1, output_0]) 
 
 def user_input():
     FRUITS_VEGGIES = st.slider('HOW MANY FRUITS OR VEGETABLES DO YOU EAT EVERYDAY?', 0, 5)
@@ -99,11 +115,17 @@ X['GENDER'].unique()
 
 #%% model
 from sklearn.ensemble import AdaBoostClassifier
-ADA = AdaBoostClassifier()
-ADA = ADA.fit(X, y)
-result = ADA.predict(df)
-if ok:
+if ok:  
+    ADA = AdaBoostClassifier()
+    ADA = ADA.fit(X, y)
+    ADA_result = ADA.predict(df)
+    if ADA_result == 1:
+        result = 'high'
+    else:
+        result = 'low'
     st.subheader(f"You stress level is {result}.")
+
+
 
 
 
