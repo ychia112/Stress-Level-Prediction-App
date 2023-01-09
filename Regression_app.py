@@ -133,7 +133,7 @@ if ok:
         result = 'high'
     else:
         result = 'low'
-    st.subheader(f"You stress level is {result}.")
+    st.subheader(f"Your stress level is {result}.")
 
 
 
