@@ -2,7 +2,7 @@
 A regression and classification app
 
 ## Abstract
-This is a app builded with the python package streamlit.
+This is an app builded with the python package streamlit.
 It includes 2 machine learning model: classification with Adaboost classifier and regression with linear regressioin.
 
 The dataset is from kaggle:"kaggle datasets download -d ydalat/lifestyle-and-wellbeing-data"
