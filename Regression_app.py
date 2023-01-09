@@ -2,7 +2,9 @@
 """
 Created on Sun Jan  8 13:59:53 2023
 
-@author: jacky
+2023.01 Artificial Intelligence Final Project
+AI for good - Stress level prediction 
+@author: Team 7
 """
 
 import streamlit as st
@@ -23,6 +25,7 @@ stressData.drop(['index'], axis=1, inplace=True)
 stressData.drop(['Timestamp'], axis=1, inplace=True)
 stressData['DAILY_STRESS'] = stressData['DAILY_STRESS'].astype(int)
 
+# daily stress modify
 stressData.loc[stressData['DAILY_STRESS'] == 0, 'DAILY_STRESS'] = 0
 stressData.loc[stressData['DAILY_STRESS'] == 1, 'DAILY_STRESS'] = 0
 stressData.loc[stressData['DAILY_STRESS'] == 2, 'DAILY_STRESS'] = 0
@@ -30,7 +33,7 @@ stressData.loc[stressData['DAILY_STRESS'] == 3, 'DAILY_STRESS'] = 1
 stressData.loc[stressData['DAILY_STRESS'] == 4, 'DAILY_STRESS'] = 1
 stressData.loc[stressData['DAILY_STRESS'] == 5, 'DAILY_STRESS'] = 1
 
-
+# balance the amount of output1 and output0 for ML model
 filt1 = (stressData['DAILY_STRESS'] == 1)
 output_1 = stressData.loc[filt1]               # data that output = 1
 filt0 = (stressData['DAILY_STRESS'] == 0)
@@ -38,6 +41,7 @@ output_0 = stressData.loc[filt0]               # data that output = 0
 output_1 = output_1.sample(n = len(output_0))     # set the ratio of output_1 and output_0
 stressData = pd.concat([output_1, output_0]) 
 
+# web app input info
 def user_input():
     FRUITS_VEGGIES = st.slider('How many fruits or vegetables do you eat everyday?', 0, 5)
     PLACES_VISITED = st.slider('How many new places do you visit? (Over a period of 12 months.)', 0, 10)
@@ -84,7 +88,7 @@ def user_input():
                     "GENDER":GENDER}
     features = pd.DataFrame(input_data, index=[0])
     return features, ok
-#%% data pre-processing
+#%% data pre-processing for stress prediction(classification model)
 X = stressData.drop(["DAILY_STRESS"], axis=1)
 X = X.drop(["WORK_LIFE_BALANCE_SCORE"], axis = 1)
 y = stressData["DAILY_STRESS"]
@@ -110,7 +114,7 @@ df2 = df.copy()
 
 from sklearn.preprocessing import LabelEncoder
 
-# encoder for stressData
+# encoder
 le_age = LabelEncoder()
 X['AGE'] = le_age.fit_transform(X['AGE'])
 X['AGE'].unique()
@@ -118,11 +122,13 @@ X['AGE'].unique()
 le_gender = LabelEncoder()
 X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
+
+# standardize
 scaler = StandardScaler()
 scaler.fit(X)
 X = scaler.transform(X)
 df = scaler.transform(df)
-#%% model
+#%% model for classification
 from sklearn.ensemble import AdaBoostClassifier
 ADA_result = 0
 if ok:  
@@ -136,13 +142,11 @@ if ok:
     st.subheader(f"Your stress level is {result}.")
 
 
-
+# load data for regression model
 X = stressData.drop("WORK_LIFE_BALANCE_SCORE", axis=1)
 y = stressData["WORK_LIFE_BALANCE_SCORE"]
-    
-from sklearn.preprocessing import LabelEncoder
 
-# encoder for stressData
+# encoder
 le_age = LabelEncoder()
 X['AGE'] = le_age.fit_transform(X['AGE'])
 X['AGE'].unique()
@@ -151,14 +155,14 @@ le_gender = LabelEncoder()
 X['GENDER'] = le_gender.fit_transform(X['GENDER'])
 X['GENDER'].unique()
 
-from sklearn.preprocessing import StandardScaler
+#standardize
 scaler = StandardScaler()
 scaler.fit(X)
 X = scaler.transform(X)
 df2.insert(1,'DAILY_STRESS',[ADA_result])
 df2 = scaler.transform(df2)
 df2 = pd.DataFrame(df2)
-#%% model
+#%% model for regression
 def linear_regression(x,y):
   x=np.concatenate([np.ones((x.shape[0],1)),x],axis=1)
   beta=np.matmul(np.matmul(np.linalg.inv(np.matmul(x.T,x)),x.T),y)
