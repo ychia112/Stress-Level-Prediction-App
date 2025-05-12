@@ -44,7 +44,7 @@ stressData = pd.concat([output_1, output_0])
 # web app input info
 def user_input():
     FRUITS_VEGGIES = st.slider('How many fruits or vegetables do you eat everyday?', 0, 5)
-    PLACES_VISITED = st.slider('How many new places do you visit? (Over a period of 12 months.)', 0, 10)
+    PLACES_VISITED = st.slider('How many new places did you visit? (Over a period of 12 months.)', 0, 10)
     CORE_CIRCLE = st.slider('How many people are very close to you?', 0, 10)
     SUPPORTING_OTHERS = st.slider('How many people do you help achieve a better life? (Over a period of 12 months. e.g.: caring for your family, actively supporting a friend, mentoring, coaching,...)', 0, 10)
     SOCIAL_NETWORK = st.slider('With how many people do you interact with during a typical day?', 0, 10)
